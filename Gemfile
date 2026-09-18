@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gem "json", ">= 2.16.0", "< 3.0"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2.3", ">= 7.2.3.2"
+gem "rails", "~> 8.1.3"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 # Use postgresql as the database for Active Record
@@ -52,7 +52,7 @@ group :development do
 end
 
 
-gem "activerecord-postgis-adapter", "~> 10.0"
+gem "activerecord-postgis-adapter", "~> 11.1"
 
 gem "sidekiq", "~> 8.1"
 gem "devise"
