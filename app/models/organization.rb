@@ -10,6 +10,6 @@ class Organization < ApplicationRecord
   def set_path
     new_path = parent_id.present? ? "#{Organization.find(parent_id).path}.#{id}" : id.to_s
     update_column(:path, new_path)
-    update_column(:depth, new_path.count('.'))
+    update_column(:depth, new_path.count("."))
   end
 end

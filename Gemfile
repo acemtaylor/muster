@@ -59,7 +59,7 @@ gem "devise"
 gem "pundit"
 gem "rack-attack"
 gem "aws-sdk-s3"
-gem "dotenv-rails", groups: [:development, :test]
+gem "dotenv-rails", groups: [ :development, :test ]
 
 group :development, :test do
   gem "rspec-rails"
