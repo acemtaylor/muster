@@ -284,6 +284,9 @@ ALTER TABLE ONLY public.team_members
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260919065361'),
+('20260919065360'),
+('20260919065359'),
 ('20260918105446'),
 ('20260918103422'),
 ('20260918101609');
