@@ -218,6 +218,41 @@ ALTER SEQUENCE public.custom_property_values_id_seq OWNED BY public.custom_prope
 
 
 --
+-- Name: donations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.donations (
+    id bigint NOT NULL,
+    person_id bigint,
+    amount_cents integer NOT NULL,
+    currency text DEFAULT 'USD'::text NOT NULL,
+    is_recurring boolean DEFAULT false NOT NULL,
+    processor text,
+    processor_ref text,
+    occurred_at timestamp(6) without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: donations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.donations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: donations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.donations_id_seq OWNED BY public.donations.id;
+
+
+--
 -- Name: event_locations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -391,6 +426,115 @@ CREATE SEQUENCE public.list_folders_id_seq
 --
 
 ALTER SEQUENCE public.list_folders_id_seq OWNED BY public.list_folders.id;
+
+
+--
+-- Name: membership_payments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.membership_payments (
+    id bigint NOT NULL,
+    membership_id bigint NOT NULL,
+    amount_cents integer NOT NULL,
+    processor text,
+    processor_ref text,
+    paid_at timestamp(6) without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: membership_payments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.membership_payments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: membership_payments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.membership_payments_id_seq OWNED BY public.membership_payments.id;
+
+
+--
+-- Name: membership_tiers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.membership_tiers (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    name text NOT NULL,
+    billing_period text NOT NULL,
+    price_cents integer,
+    income_based boolean DEFAULT false NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: membership_tiers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.membership_tiers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: membership_tiers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.membership_tiers_id_seq OWNED BY public.membership_tiers.id;
+
+
+--
+-- Name: memberships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.memberships (
+    id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    membership_tier_id bigint NOT NULL,
+    status text DEFAULT 'active'::text NOT NULL,
+    started_at timestamp(6) without time zone DEFAULT now() NOT NULL,
+    expires_at timestamp(6) without time zone,
+    auto_renew boolean DEFAULT true NOT NULL,
+    cancelled_at timestamp(6) without time zone,
+    stripe_subscription_id text,
+    amount_cents integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: memberships_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.memberships_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: memberships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.memberships_id_seq OWNED BY public.memberships.id;
 
 
 --
@@ -644,6 +788,13 @@ ALTER TABLE ONLY public.custom_property_values ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: donations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.donations ALTER COLUMN id SET DEFAULT nextval('public.donations_id_seq'::regclass);
+
+
+--
 -- Name: event_locations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -676,6 +827,27 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 --
 
 ALTER TABLE ONLY public.list_folders ALTER COLUMN id SET DEFAULT nextval('public.list_folders_id_seq'::regclass);
+
+
+--
+-- Name: membership_payments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.membership_payments ALTER COLUMN id SET DEFAULT nextval('public.membership_payments_id_seq'::regclass);
+
+
+--
+-- Name: membership_tiers id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.membership_tiers ALTER COLUMN id SET DEFAULT nextval('public.membership_tiers_id_seq'::regclass);
+
+
+--
+-- Name: memberships id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships ALTER COLUMN id SET DEFAULT nextval('public.memberships_id_seq'::regclass);
 
 
 --
@@ -754,6 +926,14 @@ ALTER TABLE ONLY public.custom_property_values
 
 
 --
+-- Name: donations donations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.donations
+    ADD CONSTRAINT donations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: event_locations event_locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -791,6 +971,30 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.list_folders
     ADD CONSTRAINT list_folders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: membership_payments membership_payments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.membership_payments
+    ADD CONSTRAINT membership_payments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: membership_tiers membership_tiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.membership_tiers
+    ADD CONSTRAINT membership_tiers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: memberships memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships
+    ADD CONSTRAINT memberships_pkey PRIMARY KEY (id);
 
 
 --
@@ -961,6 +1165,13 @@ CREATE INDEX index_custom_property_values_on_value ON public.custom_property_val
 
 
 --
+-- Name: index_donations_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_donations_on_person_id ON public.donations USING btree (person_id);
+
+
+--
 -- Name: index_event_locations_on_event_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1014,6 +1225,41 @@ CREATE INDEX index_events_on_organization_id ON public.events USING btree (organ
 --
 
 CREATE INDEX index_list_folders_on_organization_id ON public.list_folders USING btree (organization_id);
+
+
+--
+-- Name: index_membership_payments_on_membership_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_membership_payments_on_membership_id ON public.membership_payments USING btree (membership_id);
+
+
+--
+-- Name: index_membership_tiers_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_membership_tiers_on_organization_id ON public.membership_tiers USING btree (organization_id);
+
+
+--
+-- Name: index_memberships_on_expires_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_expires_at ON public.memberships USING btree (expires_at);
+
+
+--
+-- Name: index_memberships_on_membership_tier_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_membership_tier_id ON public.memberships USING btree (membership_tier_id);
+
+
+--
+-- Name: index_memberships_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_person_id ON public.memberships USING btree (person_id);
 
 
 --
@@ -1130,6 +1376,14 @@ ALTER TABLE ONLY public.shift_signups
 
 
 --
+-- Name: memberships fk_rails_092b9b8356; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships
+    ADD CONSTRAINT fk_rails_092b9b8356 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: custom_property_definitions fk_rails_0cecd45e5a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1143,6 +1397,14 @@ ALTER TABLE ONLY public.custom_property_definitions
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT fk_rails_163b5130b5 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: membership_tiers fk_rails_17a848ed7a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.membership_tiers
+    ADD CONSTRAINT fk_rails_17a848ed7a FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
 
 
 --
@@ -1194,6 +1456,14 @@ ALTER TABLE ONLY public.event_rsvps
 
 
 --
+-- Name: donations fk_rails_776e99a61e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.donations
+    ADD CONSTRAINT fk_rails_776e99a61e FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: event_locations fk_rails_7c5d68f3b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1207,6 +1477,14 @@ ALTER TABLE ONLY public.event_locations
 
 ALTER TABLE ONLY public.saved_list_memberships
     ADD CONSTRAINT fk_rails_7d016c6a8e FOREIGN KEY (saved_list_id) REFERENCES public.saved_lists(id);
+
+
+--
+-- Name: memberships fk_rails_8cd7a9ff0f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships
+    ADD CONSTRAINT fk_rails_8cd7a9ff0f FOREIGN KEY (membership_tier_id) REFERENCES public.membership_tiers(id);
 
 
 --
@@ -1298,12 +1576,21 @@ ALTER TABLE ONLY public.assessment_status_changes
 
 
 --
+-- Name: membership_payments fk_rails_fdcec7ba8b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.membership_payments
+    ADD CONSTRAINT fk_rails_fdcec7ba8b FOREIGN KEY (membership_id) REFERENCES public.memberships(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260920074306'),
 ('20260920072422'),
 ('20260920071913'),
 ('20260919070651'),
