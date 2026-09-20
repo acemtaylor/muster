@@ -1,0 +1,34 @@
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold">People</h1>
+  <%= link_to "Add Person", new_person_path, class: "bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800" %>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+  <table class="w-full text-left">
+    <thead class="bg-gray-50 border-b text-sm text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Name</th>
+        <th class="px-4 py-3">Email</th>
+        <th class="px-4 py-3">Phone</th>
+        <th class="px-4 py-3">City</th>
+        <th class="px-4 py-3">Assessment</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y">
+      <% @people.each do |person| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3">
+            <%= link_to person.full_name.presence || "(no name)", person, class: "text-blue-600 hover:underline" %>
+          </td>
+          <td class="px-4 py-3 text-gray-600"><%= person.email %></td>
+          <td class="px-4 py-3 text-gray-600"><%= person.phone_number %></td>
+          <td class="px-4 py-3 text-gray-600"><%= person.city %></td>
+          <td class="px-4 py-3 text-gray-600"><%= person.assessment %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @people.empty? %>
+    <div class="p-6 text-gray-500 text-center">No people yet.</div>
+  <% end %>
+</div>

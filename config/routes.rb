@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
+  get "dashboard/index"
   devise_for :team_members
+  root "dashboard#index"
+resources :people
+resources :events
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

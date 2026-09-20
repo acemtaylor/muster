@@ -1,0 +1,36 @@
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold"><%= @person.full_name.presence || "(no name)" %></h1>
+  <div class="space-x-2">
+    <%= link_to "Edit", edit_person_path(@person), class: "bg-gray-200 px-4 py-2 rounded hover:bg-gray-300" %>
+    <%= button_to "Delete", person_path(@person), method: :delete, class: "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700", data: { turbo_confirm: "Are you sure?" } %>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm border p-6 grid grid-cols-2 gap-4">
+  <div>
+    <div class="text-sm text-gray-500">Email</div>
+    <div><%= @person.email.presence || "—" %></div>
+  </div>
+  <div>
+    <div class="text-sm text-gray-500">Phone</div>
+    <div><%= @person.phone_number.presence || "—" %></div>
+  </div>
+  <div>
+    <div class="text-sm text-gray-500">Address</div>
+    <div><%= [@person.address_1, @person.city, @person.state, @person.postal_code].compact_blank.join(", ").presence || "—" %></div>
+  </div>
+  <div>
+    <div class="text-sm text-gray-500">Assessment</div>
+    <div><%= @person.assessment.presence || "—" %></div>
+  </div>
+  <div>
+    <div class="text-sm text-gray-500">Created via</div>
+    <div><%= @person.created_by_method.presence || "—" %></div>
+  </div>
+  <div>
+    <div class="text-sm text-gray-500">Added</div>
+    <div><%= @person.created_at.strftime("%b %d, %Y") %></div>
+  </div>
+</div>
+
+<%= link_to "← Back to People", people_path, class: "inline-block mt-6 text-gray-500 hover:underline" %>

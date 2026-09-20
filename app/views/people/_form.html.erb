@@ -1,0 +1,62 @@
+<%= form_with model: @person, class: "bg-white rounded-lg shadow-sm border p-6 space-y-4" do |f| %>
+  <% if @person.errors.any? %>
+    <div class="bg-red-50 text-red-700 p-3 rounded text-sm">
+      <ul class="list-disc list-inside">
+        <% @person.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :first_name, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.text_field :first_name, class: "w-full border rounded px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :last_name, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.text_field :last_name, class: "w-full border rounded px-3 py-2" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :email, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.email_field :email, class: "w-full border rounded px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :phone_number, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.text_field :phone_number, class: "w-full border rounded px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :address_1, "Address", class: "block text-sm text-gray-600 mb-1" %>
+    <%= f.text_field :address_1, class: "w-full border rounded px-3 py-2" %>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4">
+    <div>
+      <%= f.label :city, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.text_field :city, class: "w-full border rounded px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :state, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.text_field :state, class: "w-full border rounded px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :postal_code, class: "block text-sm text-gray-600 mb-1" %>
+      <%= f.text_field :postal_code, class: "w-full border rounded px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :assessment, class: "block text-sm text-gray-600 mb-1" %>
+    <%= f.text_field :assessment, class: "w-full border rounded px-3 py-2" %>
+  </div>
+
+  <div class="pt-2">
+    <%= f.submit class: "bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer" %>
+  </div>
+<% end %>
