@@ -150,6 +150,73 @@ ALTER SEQUENCE public.assessment_statuses_id_seq OWNED BY public.assessment_stat
 
 
 --
+-- Name: canvass_attempts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.canvass_attempts (
+    id bigint NOT NULL,
+    canvass_id bigint NOT NULL,
+    turf_id bigint,
+    person_id bigint,
+    canvasser_id bigint,
+    knock_result text,
+    occurred_at timestamp(6) without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: canvass_attempts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.canvass_attempts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: canvass_attempts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.canvass_attempts_id_seq OWNED BY public.canvass_attempts.id;
+
+
+--
+-- Name: canvasses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.canvasses (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    name text NOT NULL,
+    script text,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: canvasses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.canvasses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: canvasses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.canvasses_id_seq OWNED BY public.canvasses.id;
+
+
+--
 -- Name: custom_property_definitions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -760,6 +827,39 @@ ALTER SEQUENCE public.team_members_id_seq OWNED BY public.team_members.id;
 
 
 --
+-- Name: turfs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.turfs (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    name text NOT NULL,
+    boundary public.geography(Polygon,4326) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: turfs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.turfs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: turfs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.turfs_id_seq OWNED BY public.turfs.id;
+
+
+--
 -- Name: assessment_status_changes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -771,6 +871,20 @@ ALTER TABLE ONLY public.assessment_status_changes ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY public.assessment_statuses ALTER COLUMN id SET DEFAULT nextval('public.assessment_statuses_id_seq'::regclass);
+
+
+--
+-- Name: canvass_attempts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvass_attempts ALTER COLUMN id SET DEFAULT nextval('public.canvass_attempts_id_seq'::regclass);
+
+
+--
+-- Name: canvasses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvasses ALTER COLUMN id SET DEFAULT nextval('public.canvasses_id_seq'::regclass);
 
 
 --
@@ -886,6 +1000,13 @@ ALTER TABLE ONLY public.team_members ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: turfs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.turfs ALTER COLUMN id SET DEFAULT nextval('public.turfs_id_seq'::regclass);
+
+
+--
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -907,6 +1028,22 @@ ALTER TABLE ONLY public.assessment_status_changes
 
 ALTER TABLE ONLY public.assessment_statuses
     ADD CONSTRAINT assessment_statuses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: canvass_attempts canvass_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvass_attempts
+    ADD CONSTRAINT canvass_attempts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: canvasses canvasses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvasses
+    ADD CONSTRAINT canvasses_pkey PRIMARY KEY (id);
 
 
 --
@@ -1046,6 +1183,14 @@ ALTER TABLE ONLY public.team_members
 
 
 --
+-- Name: turfs turfs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.turfs
+    ADD CONSTRAINT turfs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: idx_cpv_person_definition; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1127,6 +1272,41 @@ CREATE INDEX index_assessment_statuses_on_organization_id ON public.assessment_s
 --
 
 CREATE UNIQUE INDEX index_assessment_statuses_on_organization_id_and_key ON public.assessment_statuses USING btree (organization_id, key);
+
+
+--
+-- Name: index_canvass_attempts_on_canvass_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_canvass_attempts_on_canvass_id ON public.canvass_attempts USING btree (canvass_id);
+
+
+--
+-- Name: index_canvass_attempts_on_canvasser_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_canvass_attempts_on_canvasser_id ON public.canvass_attempts USING btree (canvasser_id);
+
+
+--
+-- Name: index_canvass_attempts_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_canvass_attempts_on_person_id ON public.canvass_attempts USING btree (person_id);
+
+
+--
+-- Name: index_canvass_attempts_on_turf_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_canvass_attempts_on_turf_id ON public.canvass_attempts USING btree (turf_id);
+
+
+--
+-- Name: index_canvasses_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_canvasses_on_organization_id ON public.canvasses USING btree (organization_id);
 
 
 --
@@ -1368,6 +1548,21 @@ CREATE UNIQUE INDEX index_team_members_on_reset_password_token ON public.team_me
 
 
 --
+-- Name: index_turfs_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_turfs_on_organization_id ON public.turfs USING btree (organization_id);
+
+
+--
+-- Name: canvass_attempts fk_rails_0297923aa6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvass_attempts
+    ADD CONSTRAINT fk_rails_0297923aa6 FOREIGN KEY (turf_id) REFERENCES public.turfs(id);
+
+
+--
 -- Name: shift_signups fk_rails_07b7adb7d1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1440,6 +1635,14 @@ ALTER TABLE ONLY public.event_shifts
 
 
 --
+-- Name: canvass_attempts fk_rails_52726022e3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvass_attempts
+    ADD CONSTRAINT fk_rails_52726022e3 FOREIGN KEY (canvasser_id) REFERENCES public.team_members(id);
+
+
+--
 -- Name: organizations fk_rails_6551137b98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1453,6 +1656,14 @@ ALTER TABLE ONLY public.organizations
 
 ALTER TABLE ONLY public.event_rsvps
     ADD CONSTRAINT fk_rails_6bdac917c9 FOREIGN KEY (event_id) REFERENCES public.events(id);
+
+
+--
+-- Name: canvass_attempts fk_rails_6d5a18ddbc; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvass_attempts
+    ADD CONSTRAINT fk_rails_6d5a18ddbc FOREIGN KEY (canvass_id) REFERENCES public.canvasses(id);
 
 
 --
@@ -1480,11 +1691,27 @@ ALTER TABLE ONLY public.saved_list_memberships
 
 
 --
+-- Name: turfs fk_rails_7f9cf3acc0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.turfs
+    ADD CONSTRAINT fk_rails_7f9cf3acc0 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
 -- Name: memberships fk_rails_8cd7a9ff0f; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.memberships
     ADD CONSTRAINT fk_rails_8cd7a9ff0f FOREIGN KEY (membership_tier_id) REFERENCES public.membership_tiers(id);
+
+
+--
+-- Name: canvasses fk_rails_970cf4dbea; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvasses
+    ADD CONSTRAINT fk_rails_970cf4dbea FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
 
 
 --
@@ -1544,6 +1771,14 @@ ALTER TABLE ONLY public.custom_property_values
 
 
 --
+-- Name: canvass_attempts fk_rails_e76622bb9a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.canvass_attempts
+    ADD CONSTRAINT fk_rails_e76622bb9a FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: assessment_statuses fk_rails_e7972097ee; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1590,6 +1825,7 @@ ALTER TABLE ONLY public.membership_payments
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260920074809'),
 ('20260920074306'),
 ('20260920072422'),
 ('20260920071913'),
