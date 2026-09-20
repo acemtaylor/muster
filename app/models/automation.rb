@@ -7,4 +7,3 @@ class Automation < ApplicationRecord
   validates :name, presence: true
   validates :trigger_type, inclusion: { in: TRIGGER_TYPES }
 end
-

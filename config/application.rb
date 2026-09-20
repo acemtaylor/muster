@@ -20,7 +20,7 @@ Bundler.require(*Rails.groups)
 
 module OrganizingCrm
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
+# Initialize configuration defaults for originally generated Rails version.
 config.load_defaults 8.1
 config.active_record.schema_format = :sql
 

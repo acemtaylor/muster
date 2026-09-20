@@ -29,8 +29,8 @@ class CreatePeople < ActiveRecord::Migration[8.1]
 
     add_index :people, :phone_number
     add_index :people, :email
-    add_index :people, [:organization_id, :phone_number], name: "idx_people_org_phone"
-    add_index :people, [:organization_id, :email], name: "idx_people_org_email"
+    add_index :people, [ :organization_id, :phone_number ], name: "idx_people_org_phone"
+    add_index :people, [ :organization_id, :email ], name: "idx_people_org_email"
 
     execute <<-SQL
       CREATE INDEX idx_people_search ON people USING GIN (

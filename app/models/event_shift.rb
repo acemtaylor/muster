@@ -24,4 +24,3 @@ class EventShift < ApplicationRecord
     event.save
   end
 end
-

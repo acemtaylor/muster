@@ -14,11 +14,11 @@ class Membership < ApplicationRecord
 
   def renew!(amount_cents: self.amount_cents, processor: nil, processor_ref: nil)
     period_length = case membership_tier.billing_period
-                     when "monthly" then 1.month
-                     when "annual"  then 1.year
-                     else
+    when "monthly" then 1.month
+    when "annual"  then 1.year
+    else
                        raise "Cannot auto-calculate renewal period for #{membership_tier.billing_period} tier"
-                     end
+    end
 
     transaction do
       membership_payments.create!(amount_cents: amount_cents, processor: processor, processor_ref: processor_ref)

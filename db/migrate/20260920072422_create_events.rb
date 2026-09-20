@@ -35,7 +35,7 @@ class CreateEvents < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :event_shifts, [:starts_at, :ends_at]
+    add_index :event_shifts, [ :starts_at, :ends_at ]
 
     create_table :shift_signups do |t|
       t.references :event_shift, null: false, foreign_key: true
@@ -46,7 +46,7 @@ class CreateEvents < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :shift_signups, [:event_shift_id, :person_id], unique: true, name: "idx_signups_shift_person"
+    add_index :shift_signups, [ :event_shift_id, :person_id ], unique: true, name: "idx_signups_shift_person"
 
     create_table :event_rsvps do |t|
       t.references :event, null: false, foreign_key: true
@@ -57,6 +57,6 @@ class CreateEvents < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :event_rsvps, [:event_id, :person_id], unique: true, name: "idx_rsvps_event_person"
+    add_index :event_rsvps, [ :event_id, :person_id ], unique: true, name: "idx_rsvps_event_person"
   end
 end

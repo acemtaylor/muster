@@ -25,8 +25,8 @@ class CreateSavedLists < ActiveRecord::Migration[8.1]
       t.bigint :subject_id, null: false
     end
 
-    add_index :saved_list_memberships, [:saved_list_id, :subject_type, :subject_id],
+    add_index :saved_list_memberships, [ :saved_list_id, :subject_type, :subject_id ],
               unique: true, name: "idx_slm_primary"
-    add_index :saved_list_memberships, [:subject_type, :subject_id], name: "idx_slm_subject"
+    add_index :saved_list_memberships, [ :subject_type, :subject_id ], name: "idx_slm_subject"
   end
 end

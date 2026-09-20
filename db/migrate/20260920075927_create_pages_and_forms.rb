@@ -10,7 +10,7 @@ class CreatePagesAndForms < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :pages, [:organization_id, :slug], unique: true
+    add_index :pages, [ :organization_id, :slug ], unique: true
 
     create_table :form_submissions do |t|
       t.references :page, null: false, foreign_key: true

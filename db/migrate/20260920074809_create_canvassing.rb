@@ -24,6 +24,5 @@ class CreateCanvassing < ActiveRecord::Migration[8.1]
       t.text :knock_result
       t.datetime :occurred_at, null: false, default: -> { "now()" }
     end
-
   end
 end

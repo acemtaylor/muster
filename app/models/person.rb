@@ -5,6 +5,6 @@ class Person < ApplicationRecord
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 
   def full_name
-    [first_name, last_name].compact_blank.join(" ")
+    [ first_name, last_name ].compact_blank.join(" ")
   end
 end

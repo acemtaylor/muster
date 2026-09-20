@@ -10,7 +10,7 @@ class CreateAssessmentStatuses < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :assessment_statuses, [:organization_id, :key], unique: true
+    add_index :assessment_statuses, [ :organization_id, :key ], unique: true
 
     create_table :assessment_status_changes do |t|
       t.references :person, null: false, foreign_key: true

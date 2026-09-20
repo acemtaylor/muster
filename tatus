@@ -1,0 +1,229 @@
+[1mdiff --git a/app/controllers/events_controller.rb b/app/controllers/events_controller.rb[m
+[1mindex 12c5801..7e18a34 100644[m
+[1m--- a/app/controllers/events_controller.rb[m
+[1m+++ b/app/controllers/events_controller.rb[m
+[36m@@ -1,6 +1,6 @@[m
+ class EventsController < ApplicationController[m
+   before_action :authenticate_team_member![m
+[31m-  before_action :set_event, only: [:show, :edit, :update, :destroy][m
+[32m+[m[32m  before_action :set_event, only: [ :show, :edit, :update, :destroy ][m
+ [m
+   def index[m
+     @events = Event.order(starts_at: :asc)[m
+[1mdiff --git a/app/controllers/people_controller.rb b/app/controllers/people_controller.rb[m
+[1mindex 92d09a7..0f13da1 100644[m
+[1m--- a/app/controllers/people_controller.rb[m
+[1m+++ b/app/controllers/people_controller.rb[m
+[36m@@ -1,6 +1,6 @@[m
+ class PeopleController < ApplicationController[m
+   before_action :authenticate_team_member![m
+[31m-  before_action :set_person, only: [:show, :edit, :update, :destroy][m
+[32m+[m[32m  before_action :set_person, only: [ :show, :edit, :update, :destroy ][m
+ [m
+   def index[m
+     @people = Person.order(created_at: :desc).limit(50)[m
+[1mdiff --git a/app/models/automation.rb b/app/models/automation.rb[m
+[1mindex 042c805..a877aef 100644[m
+[1m--- a/app/models/automation.rb[m
+[1m+++ b/app/models/automation.rb[m
+[36m@@ -7,4 +7,3 @@[m [mclass Automation < ApplicationRecord[m
+   validates :name, presence: true[m
+   validates :trigger_type, inclusion: { in: TRIGGER_TYPES }[m
+ end[m
+[31m-[m
+[1mdiff --git a/app/models/event.rb b/app/models/event.rb[m
+[1mindex f7a01ba..84b5cba 100644[m
+[1m--- a/app/models/event.rb[m
+[1m+++ b/app/models/event.rb[m
+[36m@@ -15,7 +15,7 @@[m [mclass Event < ApplicationRecord[m
+     shifts = event_shifts.reload[m
+     return if shifts.empty?[m
+ [m
+[31m-    dates = shifts.flat_map { |s| [s.starts_at.to_date, s.ends_at.to_date] }[m
+[32m+[m[32m    dates = shifts.flat_map { |s| [ s.starts_at.to_date, s.ends_at.to_date ] }[m
+     self.is_multi_day = dates.uniq.size > 1[m
+   end[m
+ end[m
+[1mdiff --git a/app/models/event_shift.rb b/app/models/event_shift.rb[m
+[1mindex 370b3d1..6be57ab 100644[m
+[1m--- a/app/models/event_shift.rb[m
+[1m+++ b/app/models/event_shift.rb[m
+[36m@@ -24,4 +24,3 @@[m [mclass EventShift < ApplicationRecord[m
+     event.save[m
+   end[m
+ end[m
+[31m-[m
+[1mdiff --git a/app/models/membership.rb b/app/models/membership.rb[m
+[1mindex 48b0a41..66910ce 100644[m
+[1m--- a/app/models/membership.rb[m
+[1m+++ b/app/models/membership.rb[m
+[36m@@ -14,11 +14,11 @@[m [mclass Membership < ApplicationRecord[m
+ [m
+   def renew!(amount_cents: self.amount_cents, processor: nil, processor_ref: nil)[m
+     period_length = case membership_tier.billing_period[m
+[31m-                     when "monthly" then 1.month[m
+[31m-                     when "annual"  then 1.year[m
+[31m-                     else[m
+[32m+[m[32m    when "monthly" then 1.month[m
+[32m+[m[32m    when "annual"  then 1.year[m
+[32m+[m[32m    else[m
+                        raise "Cannot auto-calculate renewal period for #{membership_tier.billing_period} tier"[m
+[31m-                     end[m
+[32m+[m[32m    end[m
+ [m
+     transaction do[m
+       membership_payments.create!(amount_cents: amount_cents, processor: processor, processor_ref: processor_ref)[m
+[1mdiff --git a/app/models/person.rb b/app/models/person.rb[m
+[1mindex 5c80ab9..634b891 100644[m
+[1m--- a/app/models/person.rb[m
+[1m+++ b/app/models/person.rb[m
+[36m@@ -5,6 +5,6 @@[m [mclass Person < ApplicationRecord[m
+   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true[m
+ [m
+   def full_name[m
+[31m-    [first_name, last_name].compact_blank.join(" ")[m
+[32m+[m[32m    [ first_name, last_name ].compact_blank.join(" ")[m
+   end[m
+ end[m
+[1mdiff --git a/config/application.rb b/config/application.rb[m
+[1mindex 3e5d48f..f5407ac 100644[m
+[1m--- a/config/application.rb[m
+[1m+++ b/config/application.rb[m
+[36m@@ -20,7 +20,7 @@[m [mBundler.require(*Rails.groups)[m
+ [m
+ module OrganizingCrm[m
+   class Application < Rails::Application[m
+[31m-    # Initialize configuration defaults for originally generated Rails version.[m
+[32m+[m[32m# Initialize configuration defaults for originally generated Rails version.[m
+ config.load_defaults 8.1[m
+ config.active_record.schema_format = :sql[m
+ [m
+[1mdiff --git a/db/migrate/20260919070044_create_people.rb b/db/migrate/20260919070044_create_people.rb[m
+[1mindex 99387cf..4172738 100644[m
+[1m--- a/db/migrate/20260919070044_create_people.rb[m
+[1m+++ b/db/migrate/20260919070044_create_people.rb[m
+[36m@@ -29,8 +29,8 @@[m [mclass CreatePeople < ActiveRecord::Migration[8.1][m
+ [m
+     add_index :people, :phone_number[m
+     add_index :people, :email[m
+[31m-    add_index :people, [:organization_id, :phone_number], name: "idx_people_org_phone"[m
+[31m-    add_index :people, [:organization_id, :email], name: "idx_people_org_email"[m
+[32m+[m[32m    add_index :people, [ :organization_id, :phone_number ], name: "idx_people_org_phone"[m
+[32m+[m[32m    add_index :people, [ :organization_id, :email ], name: "idx_people_org_email"[m
+ [m
+     execute <<-SQL[m
+       CREATE INDEX idx_people_search ON people USING GIN ([m
+[1mdiff --git a/db/migrate/20260919070445_create_assessment_statuses.rb b/db/migrate/20260919070445_create_assessment_statuses.rb[m
+[1mindex 99bca19..4db8b96 100644[m
+[1m--- a/db/migrate/20260919070445_create_assessment_statuses.rb[m
+[1m+++ b/db/migrate/20260919070445_create_assessment_statuses.rb[m
+[36m@@ -10,7 +10,7 @@[m [mclass CreateAssessmentStatuses < ActiveRecord::Migration[8.1][m
+       t.timestamps[m
+     end[m
+ [m
+[31m-    add_index :assessment_statuses, [:organization_id, :key], unique: true[m
+[32m+[m[32m    add_index :assessment_statuses, [ :organization_id, :key ], unique: true[m
+ [m
+     create_table :assessment_status_changes do |t|[m
+       t.references :person, null: false, foreign_key: true[m
+[1mdiff --git a/db/migrate/20260919070651_create_custom_properties.rb b/db/migrate/20260919070651_create_custom_properties.rb[m
+[1mindex 0d9a97f..29470a3 100644[m
+[1m--- a/db/migrate/20260919070651_create_custom_properties.rb[m
+[1m+++ b/db/migrate/20260919070651_create_custom_properties.rb[m
+[36m@@ -12,7 +12,7 @@[m [mclass CreateCustomProperties < ActiveRecord::Migration[8.1][m
+       t.timestamps[m
+     end[m
+ [m
+[31m-    add_index :custom_property_definitions, [:organization_id, :key], unique: true[m
+[32m+[m[32m    add_index :custom_property_definitions, [ :organization_id, :key ], unique: true[m
+ [m
+     create_table :custom_property_values do |t|[m
+       t.references :person, null: false, foreign_key: true[m
+[36m@@ -20,7 +20,7 @@[m [mclass CreateCustomProperties < ActiveRecord::Migration[8.1][m
+       t.jsonb :value[m
+     end[m
+ [m
+[31m-    add_index :custom_property_values, [:person_id, :definition_id], unique: true, name: "idx_cpv_person_definition"[m
+[32m+[m[32m    add_index :custom_property_values, [ :person_id, :definition_id ], unique: true, name: "idx_cpv_person_definition"[m
+     add_index :custom_property_values, :value, using: :gin[m
+ [m
+     execute "ALTER TABLE custom_property_definitions ALTER COLUMN options SET DEFAULT '[]'::jsonb"[m
+[1mdiff --git a/db/migrate/20260920071913_create_saved_lists.rb b/db/migrate/20260920071913_create_saved_lists.rb[m
+[1mindex a2e6264..7bd3374 100644[m
+[1m--- a/db/migrate/20260920071913_create_saved_lists.rb[m
+[1m+++ b/db/migrate/20260920071913_create_saved_lists.rb[m
+[36m@@ -25,8 +25,8 @@[m [mclass CreateSavedLists < ActiveRecord::Migration[8.1][m
+       t.bigint :subject_id, null: false[m
+     end[m
+ [m
+[31m-    add_index :saved_list_memberships, [:saved_list_id, :subject_type, :subject_id],[m
+[32m+[m[32m    add_index :saved_list_memberships, [ :saved_list_id, :subject_type, :subject_id ],[m
+               unique: true, name: "idx_slm_primary"[m
+[31m-    add_index :saved_list_memberships, [:subject_type, :subject_id], name: "idx_slm_subject"[m
+[32m+[m[32m    add_index :saved_list_memberships, [ :subject_type, :subject_id ], name: "idx_slm_subject"[m
+   end[m
+ end[m
+[1mdiff --git a/db/migrate/20260920072422_create_events.rb b/db/migrate/20260920072422_create_events.rb[m
+[1mindex 848003a..937f4fb 100644[m
+[1m--- a/db/migrate/20260920072422_create_events.rb[m
+[1m+++ b/db/migrate/20260920072422_create_events.rb[m
+[36m@@ -35,7 +35,7 @@[m [mclass CreateEvents < ActiveRecord::Migration[8.1][m
+       t.timestamps[m
+     end[m
+ [m
+[31m-    add_index :event_shifts, [:starts_at, :ends_at][m
+[32m+[m[32m    add_index :event_shifts, [ :starts_at, :ends_at ][m
+ [m
+     create_table :shift_signups do |t|[m
+       t.references :event_shift, null: false, foreign_key: true[m
+[36m@@ -46,7 +46,7 @@[m [mclass CreateEvents < ActiveRecord::Migration[8.1][m
+       t.timestamps[m
+     end[m
+ [m
+[31m-    add_index :shift_signups, [:event_shift_id, :person_id], unique: true, name: "idx_signups_shift_person"[m
+[32m+[m[32m    add_index :shift_signups, [ :event_shift_id, :person_id ], unique: true, name: "idx_signups_shift_person"[m
+ [m
+     create_table :event_rsvps do |t|[m
+       t.references :event, null: false, foreign_key: true[m
+[36m@@ -57,6 +57,6 @@[m [mclass CreateEvents < ActiveRecord::Migration[8.1][m
+       t.timestamps[m
+     end[m
+ [m
+[31m-    add_index :event_rsvps, [:event_id, :person_id], unique: true, name: "idx_rsvps_event_person"[m
+[32m+[m[32m    add_index :event_rsvps, [ :event_id, :person_id ], unique: true, name: "idx_rsvps_event_person"[m
+   end[m
+ end[m
+[1mdiff --git a/db/migrate/20260920074809_create_canvassing.rb b/db/migrate/20260920074809_create_canvassing.rb[m
+[1mindex af184f8..db1983a 100644[m
+[1m--- a/db/migrate/20260920074809_create_canvassing.rb[m
+[1m+++ b/db/migrate/20260920074809_create_canvassing.rb[m
+[36m@@ -24,6 +24,5 @@[m [mclass CreateCanvassing < ActiveRecord::Migration[8.1][m
+       t.text :knock_result[m
+       t.datetime :occurred_at, null: false, default: -> { "now()" }[m
+     end[m
+[31m-[m
+   end[m
+ end[m
+[1mdiff --git a/db/migrate/20260920075927_create_pages_and_forms.rb b/db/migrate/20260920075927_create_pages_and_forms.rb[m
+[1mindex 76184ec..53a3978 100644[m
+[1m--- a/db/migrate/20260920075927_create_pages_and_forms.rb[m
+[1m+++ b/db/migrate/20260920075927_create_pages_and_forms.rb[m
+[36m@@ -10,7 +10,7 @@[m [mclass CreatePagesAndForms < ActiveRecord::Migration[8.1][m
+       t.timestamps[m
+     end[m
+ [m
+[31m-    add_index :pages, [:organization_id, :slug], unique: true[m
+[32m+[m[32m    add_index :pages, [ :organization_id, :slug ], unique: true[m
+ [m
+     create_table :form_submissions do |t|[m
+       t.references :page, null: false, foreign_key: true[m
+[1mdiff --git a/spec/requests/dashboard_spec.rb b/spec/requests/dashboard_spec.rb[m
+[1mindex 1a4f911..1393c3e 100644[m
+[1m--- a/spec/requests/dashboard_spec.rb[m
+[1m+++ b/spec/requests/dashboard_spec.rb[m
+[36m@@ -7,5 +7,4 @@[m [mRSpec.describe "Dashboards", type: :request do[m
+       expect(response).to have_http_status(:success)[m
+     end[m
+   end[m
+[31m-[m
+ end[m
