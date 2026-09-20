@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem "csv"
 gem "json", ">= 2.16.0", "< 3.0"
 gem "sprockets-rails"
 gem "pg", "~> 1.1"

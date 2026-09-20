@@ -82,6 +82,142 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: assessment_status_changes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.assessment_status_changes (
+    id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    changed_by_id bigint,
+    old_status text,
+    new_status text,
+    changed_at timestamp(6) without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: assessment_status_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.assessment_status_changes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: assessment_status_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.assessment_status_changes_id_seq OWNED BY public.assessment_status_changes.id;
+
+
+--
+-- Name: assessment_statuses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.assessment_statuses (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    key text NOT NULL,
+    label text NOT NULL,
+    color text,
+    "position" integer DEFAULT 0 NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: assessment_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.assessment_statuses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: assessment_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.assessment_statuses_id_seq OWNED BY public.assessment_statuses.id;
+
+
+--
+-- Name: custom_property_definitions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_property_definitions (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    key text NOT NULL,
+    label text NOT NULL,
+    data_type text NOT NULL,
+    options jsonb DEFAULT '[]'::jsonb,
+    group_name text,
+    "position" integer DEFAULT 0,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: custom_property_definitions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.custom_property_definitions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: custom_property_definitions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.custom_property_definitions_id_seq OWNED BY public.custom_property_definitions.id;
+
+
+--
+-- Name: custom_property_values; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_property_values (
+    id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    definition_id bigint NOT NULL,
+    value jsonb
+);
+
+
+--
+-- Name: custom_property_values_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.custom_property_values_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: custom_property_values_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.custom_property_values_id_seq OWNED BY public.custom_property_values.id;
+
+
+--
 -- Name: organizations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -118,6 +254,54 @@ CREATE SEQUENCE public.organizations_id_seq
 --
 
 ALTER SEQUENCE public.organizations_id_seq OWNED BY public.organizations.id;
+
+
+--
+-- Name: people; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.people (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    first_name text,
+    last_name text,
+    alternate_name text,
+    email public.citext,
+    phone_number text,
+    secondary_phone text,
+    date_of_birth date,
+    address_1 text,
+    address_2 text,
+    city text,
+    state text,
+    postal_code text,
+    country text,
+    geom public.geography(Point,4326),
+    preferred_language text DEFAULT 'en'::text,
+    assessment text,
+    created_by_method text,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: people_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.people_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: people_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.people_id_seq OWNED BY public.people.id;
 
 
 --
@@ -174,10 +358,45 @@ ALTER SEQUENCE public.team_members_id_seq OWNED BY public.team_members.id;
 
 
 --
+-- Name: assessment_status_changes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_status_changes ALTER COLUMN id SET DEFAULT nextval('public.assessment_status_changes_id_seq'::regclass);
+
+
+--
+-- Name: assessment_statuses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_statuses ALTER COLUMN id SET DEFAULT nextval('public.assessment_statuses_id_seq'::regclass);
+
+
+--
+-- Name: custom_property_definitions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_definitions ALTER COLUMN id SET DEFAULT nextval('public.custom_property_definitions_id_seq'::regclass);
+
+
+--
+-- Name: custom_property_values id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_values ALTER COLUMN id SET DEFAULT nextval('public.custom_property_values_id_seq'::regclass);
+
+
+--
 -- Name: organizations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations ALTER COLUMN id SET DEFAULT nextval('public.organizations_id_seq'::regclass);
+
+
+--
+-- Name: people id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.people_id_seq'::regclass);
 
 
 --
@@ -196,11 +415,51 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 
 --
+-- Name: assessment_status_changes assessment_status_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_status_changes
+    ADD CONSTRAINT assessment_status_changes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: assessment_statuses assessment_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_statuses
+    ADD CONSTRAINT assessment_statuses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_property_definitions custom_property_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_definitions
+    ADD CONSTRAINT custom_property_definitions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_property_values custom_property_values_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_values
+    ADD CONSTRAINT custom_property_values_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: people people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.people
+    ADD CONSTRAINT people_pkey PRIMARY KEY (id);
 
 
 --
@@ -217,6 +476,97 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.team_members
     ADD CONSTRAINT team_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_cpv_person_definition; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_cpv_person_definition ON public.custom_property_values USING btree (person_id, definition_id);
+
+
+--
+-- Name: idx_people_org_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_people_org_email ON public.people USING btree (organization_id, email);
+
+
+--
+-- Name: idx_people_org_phone; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_people_org_phone ON public.people USING btree (organization_id, phone_number);
+
+
+--
+-- Name: idx_people_search; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_people_search ON public.people USING gin (to_tsvector('english'::regconfig, ((((COALESCE(first_name, ''::text) || ' '::text) || COALESCE(last_name, ''::text)) || ' '::text) || (COALESCE(email, ''::public.citext))::text)));
+
+
+--
+-- Name: index_assessment_status_changes_on_changed_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_assessment_status_changes_on_changed_by_id ON public.assessment_status_changes USING btree (changed_by_id);
+
+
+--
+-- Name: index_assessment_status_changes_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_assessment_status_changes_on_person_id ON public.assessment_status_changes USING btree (person_id);
+
+
+--
+-- Name: index_assessment_statuses_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_assessment_statuses_on_organization_id ON public.assessment_statuses USING btree (organization_id);
+
+
+--
+-- Name: index_assessment_statuses_on_organization_id_and_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_assessment_statuses_on_organization_id_and_key ON public.assessment_statuses USING btree (organization_id, key);
+
+
+--
+-- Name: index_custom_property_definitions_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_custom_property_definitions_on_organization_id ON public.custom_property_definitions USING btree (organization_id);
+
+
+--
+-- Name: index_custom_property_definitions_on_organization_id_and_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_custom_property_definitions_on_organization_id_and_key ON public.custom_property_definitions USING btree (organization_id, key);
+
+
+--
+-- Name: index_custom_property_values_on_definition_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_custom_property_values_on_definition_id ON public.custom_property_values USING btree (definition_id);
+
+
+--
+-- Name: index_custom_property_values_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_custom_property_values_on_person_id ON public.custom_property_values USING btree (person_id);
+
+
+--
+-- Name: index_custom_property_values_on_value; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_custom_property_values_on_value ON public.custom_property_values USING gin (value);
 
 
 --
@@ -241,6 +591,27 @@ CREATE UNIQUE INDEX index_organizations_on_slug ON public.organizations USING bt
 
 
 --
+-- Name: index_people_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_people_on_email ON public.people USING btree (email);
+
+
+--
+-- Name: index_people_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_people_on_organization_id ON public.people USING btree (organization_id);
+
+
+--
+-- Name: index_people_on_phone_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_people_on_phone_number ON public.people USING btree (phone_number);
+
+
+--
 -- Name: index_team_members_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -262,6 +633,30 @@ CREATE UNIQUE INDEX index_team_members_on_reset_password_token ON public.team_me
 
 
 --
+-- Name: custom_property_definitions fk_rails_0cecd45e5a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_definitions
+    ADD CONSTRAINT fk_rails_0cecd45e5a FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: assessment_status_changes fk_rails_3b76d3820f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_status_changes
+    ADD CONSTRAINT fk_rails_3b76d3820f FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
+-- Name: custom_property_values fk_rails_40cc5f1345; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_values
+    ADD CONSTRAINT fk_rails_40cc5f1345 FOREIGN KEY (definition_id) REFERENCES public.custom_property_definitions(id);
+
+
+--
 -- Name: organizations fk_rails_6551137b98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -278,12 +673,47 @@ ALTER TABLE ONLY public.team_members
 
 
 --
+-- Name: people fk_rails_cc3c1c1fca; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.people
+    ADD CONSTRAINT fk_rails_cc3c1c1fca FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: custom_property_values fk_rails_d0ff2356c6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_property_values
+    ADD CONSTRAINT fk_rails_d0ff2356c6 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
+-- Name: assessment_statuses fk_rails_e7972097ee; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_statuses
+    ADD CONSTRAINT fk_rails_e7972097ee FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: assessment_status_changes fk_rails_fb55a185a3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.assessment_status_changes
+    ADD CONSTRAINT fk_rails_fb55a185a3 FOREIGN KEY (changed_by_id) REFERENCES public.team_members(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260919070651'),
+('20260919070445'),
+('20260919070044'),
 ('20260919065361'),
 ('20260919065360'),
 ('20260919065359'),
