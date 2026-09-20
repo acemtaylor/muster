@@ -218,6 +218,150 @@ ALTER SEQUENCE public.custom_property_values_id_seq OWNED BY public.custom_prope
 
 
 --
+-- Name: event_locations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.event_locations (
+    id bigint NOT NULL,
+    event_id bigint NOT NULL,
+    name text NOT NULL,
+    address text,
+    geom public.geography(Point,4326),
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: event_locations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.event_locations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: event_locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.event_locations_id_seq OWNED BY public.event_locations.id;
+
+
+--
+-- Name: event_rsvps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.event_rsvps (
+    id bigint NOT NULL,
+    event_id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    status text NOT NULL,
+    attended boolean,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: event_rsvps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.event_rsvps_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: event_rsvps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.event_rsvps_id_seq OWNED BY public.event_rsvps.id;
+
+
+--
+-- Name: event_shifts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.event_shifts (
+    id bigint NOT NULL,
+    event_id bigint NOT NULL,
+    event_location_id bigint,
+    title text,
+    starts_at timestamp(6) without time zone NOT NULL,
+    ends_at timestamp(6) without time zone NOT NULL,
+    role text,
+    capacity integer,
+    "position" integer DEFAULT 0 NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: event_shifts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.event_shifts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: event_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.event_shifts_id_seq OWNED BY public.event_shifts.id;
+
+
+--
+-- Name: events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.events (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    title text NOT NULL,
+    description text,
+    starts_at timestamp(6) without time zone NOT NULL,
+    ends_at timestamp(6) without time zone,
+    is_multi_day boolean DEFAULT false NOT NULL,
+    virtual_url text,
+    recurrence_rule text,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
+
+
+--
 -- Name: list_folders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -394,6 +538,40 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: shift_signups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.shift_signups (
+    id bigint NOT NULL,
+    event_shift_id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    role text,
+    status text DEFAULT 'confirmed'::text NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: shift_signups_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.shift_signups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shift_signups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.shift_signups_id_seq OWNED BY public.shift_signups.id;
+
+
+--
 -- Name: team_members; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -466,6 +644,34 @@ ALTER TABLE ONLY public.custom_property_values ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: event_locations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_locations ALTER COLUMN id SET DEFAULT nextval('public.event_locations_id_seq'::regclass);
+
+
+--
+-- Name: event_rsvps id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_rsvps ALTER COLUMN id SET DEFAULT nextval('public.event_rsvps_id_seq'::regclass);
+
+
+--
+-- Name: event_shifts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_shifts ALTER COLUMN id SET DEFAULT nextval('public.event_shifts_id_seq'::regclass);
+
+
+--
+-- Name: events id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
+
+
+--
 -- Name: list_folders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -491,6 +697,13 @@ ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.peopl
 --
 
 ALTER TABLE ONLY public.saved_lists ALTER COLUMN id SET DEFAULT nextval('public.saved_lists_id_seq'::regclass);
+
+
+--
+-- Name: shift_signups id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shift_signups ALTER COLUMN id SET DEFAULT nextval('public.shift_signups_id_seq'::regclass);
 
 
 --
@@ -541,6 +754,38 @@ ALTER TABLE ONLY public.custom_property_values
 
 
 --
+-- Name: event_locations event_locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_locations
+    ADD CONSTRAINT event_locations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_rsvps event_rsvps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_rsvps
+    ADD CONSTRAINT event_rsvps_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_shifts event_shifts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_shifts
+    ADD CONSTRAINT event_shifts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: list_folders list_folders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -581,6 +826,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: shift_signups shift_signups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shift_signups
+    ADD CONSTRAINT shift_signups_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: team_members team_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -614,6 +867,20 @@ CREATE INDEX idx_people_org_phone ON public.people USING btree (organization_id,
 --
 
 CREATE INDEX idx_people_search ON public.people USING gin (to_tsvector('english'::regconfig, ((((COALESCE(first_name, ''::text) || ' '::text) || COALESCE(last_name, ''::text)) || ' '::text) || (COALESCE(email, ''::public.citext))::text)));
+
+
+--
+-- Name: idx_rsvps_event_person; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_rsvps_event_person ON public.event_rsvps USING btree (event_id, person_id);
+
+
+--
+-- Name: idx_signups_shift_person; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_signups_shift_person ON public.shift_signups USING btree (event_shift_id, person_id);
 
 
 --
@@ -694,6 +961,55 @@ CREATE INDEX index_custom_property_values_on_value ON public.custom_property_val
 
 
 --
+-- Name: index_event_locations_on_event_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_event_locations_on_event_id ON public.event_locations USING btree (event_id);
+
+
+--
+-- Name: index_event_rsvps_on_event_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_event_rsvps_on_event_id ON public.event_rsvps USING btree (event_id);
+
+
+--
+-- Name: index_event_rsvps_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_event_rsvps_on_person_id ON public.event_rsvps USING btree (person_id);
+
+
+--
+-- Name: index_event_shifts_on_event_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_event_shifts_on_event_id ON public.event_shifts USING btree (event_id);
+
+
+--
+-- Name: index_event_shifts_on_event_location_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_event_shifts_on_event_location_id ON public.event_shifts USING btree (event_location_id);
+
+
+--
+-- Name: index_event_shifts_on_starts_at_and_ends_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_event_shifts_on_starts_at_and_ends_at ON public.event_shifts USING btree (starts_at, ends_at);
+
+
+--
+-- Name: index_events_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_events_on_organization_id ON public.events USING btree (organization_id);
+
+
+--
 -- Name: index_list_folders_on_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -771,6 +1087,20 @@ CREATE INDEX index_saved_lists_on_organization_id ON public.saved_lists USING bt
 
 
 --
+-- Name: index_shift_signups_on_event_shift_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_shift_signups_on_event_shift_id ON public.shift_signups USING btree (event_shift_id);
+
+
+--
+-- Name: index_shift_signups_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_shift_signups_on_person_id ON public.shift_signups USING btree (person_id);
+
+
+--
 -- Name: index_team_members_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -792,11 +1122,35 @@ CREATE UNIQUE INDEX index_team_members_on_reset_password_token ON public.team_me
 
 
 --
+-- Name: shift_signups fk_rails_07b7adb7d1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shift_signups
+    ADD CONSTRAINT fk_rails_07b7adb7d1 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: custom_property_definitions fk_rails_0cecd45e5a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.custom_property_definitions
     ADD CONSTRAINT fk_rails_0cecd45e5a FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: events fk_rails_163b5130b5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT fk_rails_163b5130b5 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: shift_signups fk_rails_2987619d5a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shift_signups
+    ADD CONSTRAINT fk_rails_2987619d5a FOREIGN KEY (event_shift_id) REFERENCES public.event_shifts(id);
 
 
 --
@@ -816,11 +1170,35 @@ ALTER TABLE ONLY public.custom_property_values
 
 
 --
+-- Name: event_shifts fk_rails_44ce26eba2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_shifts
+    ADD CONSTRAINT fk_rails_44ce26eba2 FOREIGN KEY (event_location_id) REFERENCES public.event_locations(id);
+
+
+--
 -- Name: organizations fk_rails_6551137b98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT fk_rails_6551137b98 FOREIGN KEY (parent_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: event_rsvps fk_rails_6bdac917c9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_rsvps
+    ADD CONSTRAINT fk_rails_6bdac917c9 FOREIGN KEY (event_id) REFERENCES public.events(id);
+
+
+--
+-- Name: event_locations fk_rails_7c5d68f3b5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_locations
+    ADD CONSTRAINT fk_rails_7c5d68f3b5 FOREIGN KEY (event_id) REFERENCES public.events(id);
 
 
 --
@@ -845,6 +1223,14 @@ ALTER TABLE ONLY public.saved_lists
 
 ALTER TABLE ONLY public.team_members
     ADD CONSTRAINT fk_rails_99fbd57ee0 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: event_shifts fk_rails_aef9f0a57a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_shifts
+    ADD CONSTRAINT fk_rails_aef9f0a57a FOREIGN KEY (event_id) REFERENCES public.events(id);
 
 
 --
@@ -888,6 +1274,14 @@ ALTER TABLE ONLY public.assessment_statuses
 
 
 --
+-- Name: event_rsvps fk_rails_f67cbc0939; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_rsvps
+    ADD CONSTRAINT fk_rails_f67cbc0939 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: saved_lists fk_rails_fa131decaa; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -910,6 +1304,7 @@ ALTER TABLE ONLY public.assessment_status_changes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260920072422'),
 ('20260920071913'),
 ('20260919070651'),
 ('20260919070445'),
