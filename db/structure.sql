@@ -218,6 +218,38 @@ ALTER SEQUENCE public.custom_property_values_id_seq OWNED BY public.custom_prope
 
 
 --
+-- Name: list_folders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.list_folders (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    name text NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: list_folders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.list_folders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: list_folders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.list_folders_id_seq OWNED BY public.list_folders.id;
+
+
+--
 -- Name: organizations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -305,6 +337,54 @@ ALTER SEQUENCE public.people_id_seq OWNED BY public.people.id;
 
 
 --
+-- Name: saved_list_memberships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.saved_list_memberships (
+    saved_list_id bigint NOT NULL,
+    subject_type text NOT NULL,
+    subject_id bigint NOT NULL
+);
+
+
+--
+-- Name: saved_lists; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.saved_lists (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    folder_id bigint,
+    name text NOT NULL,
+    subject_type text DEFAULT 'person'::text NOT NULL,
+    filter_json jsonb NOT NULL,
+    is_dynamic boolean DEFAULT true NOT NULL,
+    created_by_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: saved_lists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.saved_lists_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: saved_lists_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.saved_lists_id_seq OWNED BY public.saved_lists.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -386,6 +466,13 @@ ALTER TABLE ONLY public.custom_property_values ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: list_folders id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.list_folders ALTER COLUMN id SET DEFAULT nextval('public.list_folders_id_seq'::regclass);
+
+
+--
 -- Name: organizations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -397,6 +484,13 @@ ALTER TABLE ONLY public.organizations ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.people_id_seq'::regclass);
+
+
+--
+-- Name: saved_lists id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_lists ALTER COLUMN id SET DEFAULT nextval('public.saved_lists_id_seq'::regclass);
 
 
 --
@@ -447,6 +541,14 @@ ALTER TABLE ONLY public.custom_property_values
 
 
 --
+-- Name: list_folders list_folders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.list_folders
+    ADD CONSTRAINT list_folders_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -460,6 +562,14 @@ ALTER TABLE ONLY public.organizations
 
 ALTER TABLE ONLY public.people
     ADD CONSTRAINT people_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: saved_lists saved_lists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_lists
+    ADD CONSTRAINT saved_lists_pkey PRIMARY KEY (id);
 
 
 --
@@ -504,6 +614,20 @@ CREATE INDEX idx_people_org_phone ON public.people USING btree (organization_id,
 --
 
 CREATE INDEX idx_people_search ON public.people USING gin (to_tsvector('english'::regconfig, ((((COALESCE(first_name, ''::text) || ' '::text) || COALESCE(last_name, ''::text)) || ' '::text) || (COALESCE(email, ''::public.citext))::text)));
+
+
+--
+-- Name: idx_slm_primary; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_slm_primary ON public.saved_list_memberships USING btree (saved_list_id, subject_type, subject_id);
+
+
+--
+-- Name: idx_slm_subject; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_slm_subject ON public.saved_list_memberships USING btree (subject_type, subject_id);
 
 
 --
@@ -570,6 +694,13 @@ CREATE INDEX index_custom_property_values_on_value ON public.custom_property_val
 
 
 --
+-- Name: index_list_folders_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_list_folders_on_organization_id ON public.list_folders USING btree (organization_id);
+
+
+--
 -- Name: index_organizations_on_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -609,6 +740,34 @@ CREATE INDEX index_people_on_organization_id ON public.people USING btree (organ
 --
 
 CREATE INDEX index_people_on_phone_number ON public.people USING btree (phone_number);
+
+
+--
+-- Name: index_saved_list_memberships_on_saved_list_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_saved_list_memberships_on_saved_list_id ON public.saved_list_memberships USING btree (saved_list_id);
+
+
+--
+-- Name: index_saved_lists_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_saved_lists_on_created_by_id ON public.saved_lists USING btree (created_by_id);
+
+
+--
+-- Name: index_saved_lists_on_folder_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_saved_lists_on_folder_id ON public.saved_lists USING btree (folder_id);
+
+
+--
+-- Name: index_saved_lists_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_saved_lists_on_organization_id ON public.saved_lists USING btree (organization_id);
 
 
 --
@@ -665,11 +824,43 @@ ALTER TABLE ONLY public.organizations
 
 
 --
+-- Name: saved_list_memberships fk_rails_7d016c6a8e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_list_memberships
+    ADD CONSTRAINT fk_rails_7d016c6a8e FOREIGN KEY (saved_list_id) REFERENCES public.saved_lists(id);
+
+
+--
+-- Name: saved_lists fk_rails_99da509c78; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_lists
+    ADD CONSTRAINT fk_rails_99da509c78 FOREIGN KEY (created_by_id) REFERENCES public.team_members(id);
+
+
+--
 -- Name: team_members fk_rails_99fbd57ee0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.team_members
     ADD CONSTRAINT fk_rails_99fbd57ee0 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: saved_lists fk_rails_b53edc14f5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_lists
+    ADD CONSTRAINT fk_rails_b53edc14f5 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: list_folders fk_rails_c9e93bf1f8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.list_folders
+    ADD CONSTRAINT fk_rails_c9e93bf1f8 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
 
 
 --
@@ -697,6 +888,14 @@ ALTER TABLE ONLY public.assessment_statuses
 
 
 --
+-- Name: saved_lists fk_rails_fa131decaa; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_lists
+    ADD CONSTRAINT fk_rails_fa131decaa FOREIGN KEY (folder_id) REFERENCES public.list_folders(id);
+
+
+--
 -- Name: assessment_status_changes fk_rails_fb55a185a3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -711,6 +910,7 @@ ALTER TABLE ONLY public.assessment_status_changes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260920071913'),
 ('20260919070651'),
 ('20260919070445'),
 ('20260919070044'),
