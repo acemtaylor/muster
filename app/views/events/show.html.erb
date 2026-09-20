@@ -1,0 +1,49 @@
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-2xl font-bold"><%= @event.title %></h1>
+    <div class="text-gray-500 mt-1">
+      <%= @event.starts_at.strftime("%b %d, %Y %I:%M %p") %>
+      <% if @event.ends_at %>
+        – <%= @event.ends_at.strftime("%b %d, %Y %I:%M %p") %>
+      <% end %>
+      <% if @event.is_multi_day? %>
+        <span class="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Multi-day</span>
+      <% end %>
+    </div>
+  </div>
+  <div class="space-x-2">
+    <%= link_to "Edit", edit_event_path(@event), class: "bg-gray-200 px-4 py-2 rounded hover:bg-gray-300" %>
+    <%= button_to "Delete", event_path(@event), method: :delete, class: "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700", data: { turbo_confirm: "Are you sure?" } %>
+  </div>
+</div>
+
+<% if @event.description.present? %>
+  <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+    <%= @event.description %>
+  </div>
+<% end %>
+
+<h2 class="text-lg font-semibold mb-3">Shifts</h2>
+<div class="bg-white rounded-lg shadow-sm border divide-y">
+  <% @shifts.each do |shift| %>
+    <div class="p-4 flex justify-between items-center">
+      <div>
+        <div class="font-medium"><%= shift.title.presence || "Untitled shift" %></div>
+        <div class="text-sm text-gray-500">
+          <%= shift.starts_at.strftime("%b %d, %I:%M %p") %> – <%= shift.ends_at.strftime("%I:%M %p") %>
+        </div>
+      </div>
+      <div class="text-sm">
+        <%= shift.confirmed_signups_count %><% if shift.capacity %> / <%= shift.capacity %><% end %> signed up
+        <% if shift.full? %>
+          <span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Full</span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <% if @shifts.empty? %>
+    <div class="p-4 text-gray-500">No shifts yet.</div>
+  <% end %>
+</div>
+
+<%= link_to "← Back to Events", events_path, class: "inline-block mt-6 text-gray-500 hover:underline" %>
