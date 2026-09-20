@@ -150,6 +150,73 @@ ALTER SEQUENCE public.assessment_statuses_id_seq OWNED BY public.assessment_stat
 
 
 --
+-- Name: automation_steps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.automation_steps (
+    id bigint NOT NULL,
+    automation_id bigint NOT NULL,
+    "position" integer NOT NULL,
+    step_type text NOT NULL,
+    config jsonb DEFAULT '{}'::jsonb
+);
+
+
+--
+-- Name: automation_steps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.automation_steps_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: automation_steps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.automation_steps_id_seq OWNED BY public.automation_steps.id;
+
+
+--
+-- Name: automations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.automations (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    name text NOT NULL,
+    trigger_type text NOT NULL,
+    trigger_config jsonb DEFAULT '{}'::jsonb,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: automations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.automations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: automations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.automations_id_seq OWNED BY public.automations.id;
+
+
+--
 -- Name: canvass_attempts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -461,6 +528,41 @@ CREATE SEQUENCE public.events_id_seq
 --
 
 ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
+
+
+--
+-- Name: follow_up_tasks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.follow_up_tasks (
+    id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    assigned_to_id bigint,
+    note text,
+    due_at timestamp(6) without time zone,
+    completed_at timestamp(6) without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: follow_up_tasks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.follow_up_tasks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: follow_up_tasks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.follow_up_tasks_id_seq OWNED BY public.follow_up_tasks.id;
 
 
 --
@@ -874,6 +976,20 @@ ALTER TABLE ONLY public.assessment_statuses ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: automation_steps id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.automation_steps ALTER COLUMN id SET DEFAULT nextval('public.automation_steps_id_seq'::regclass);
+
+
+--
+-- Name: automations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.automations ALTER COLUMN id SET DEFAULT nextval('public.automations_id_seq'::regclass);
+
+
+--
 -- Name: canvass_attempts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -934,6 +1050,13 @@ ALTER TABLE ONLY public.event_shifts ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
+
+
+--
+-- Name: follow_up_tasks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_up_tasks ALTER COLUMN id SET DEFAULT nextval('public.follow_up_tasks_id_seq'::regclass);
 
 
 --
@@ -1031,6 +1154,22 @@ ALTER TABLE ONLY public.assessment_statuses
 
 
 --
+-- Name: automation_steps automation_steps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.automation_steps
+    ADD CONSTRAINT automation_steps_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: automations automations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.automations
+    ADD CONSTRAINT automations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: canvass_attempts canvass_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1100,6 +1239,14 @@ ALTER TABLE ONLY public.event_shifts
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: follow_up_tasks follow_up_tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_up_tasks
+    ADD CONSTRAINT follow_up_tasks_pkey PRIMARY KEY (id);
 
 
 --
@@ -1275,6 +1422,20 @@ CREATE UNIQUE INDEX index_assessment_statuses_on_organization_id_and_key ON publ
 
 
 --
+-- Name: index_automation_steps_on_automation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_automation_steps_on_automation_id ON public.automation_steps USING btree (automation_id);
+
+
+--
+-- Name: index_automations_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_automations_on_organization_id ON public.automations USING btree (organization_id);
+
+
+--
 -- Name: index_canvass_attempts_on_canvass_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1398,6 +1559,20 @@ CREATE INDEX index_event_shifts_on_starts_at_and_ends_at ON public.event_shifts 
 --
 
 CREATE INDEX index_events_on_organization_id ON public.events USING btree (organization_id);
+
+
+--
+-- Name: index_follow_up_tasks_on_assigned_to_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_follow_up_tasks_on_assigned_to_id ON public.follow_up_tasks USING btree (assigned_to_id);
+
+
+--
+-- Name: index_follow_up_tasks_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_follow_up_tasks_on_person_id ON public.follow_up_tasks USING btree (person_id);
 
 
 --
@@ -1587,6 +1762,14 @@ ALTER TABLE ONLY public.custom_property_definitions
 
 
 --
+-- Name: follow_up_tasks fk_rails_0de9fd2c5f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_up_tasks
+    ADD CONSTRAINT fk_rails_0de9fd2c5f FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: events fk_rails_163b5130b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1651,11 +1834,27 @@ ALTER TABLE ONLY public.organizations
 
 
 --
+-- Name: automations fk_rails_6a9701a672; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.automations
+    ADD CONSTRAINT fk_rails_6a9701a672 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
 -- Name: event_rsvps fk_rails_6bdac917c9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.event_rsvps
     ADD CONSTRAINT fk_rails_6bdac917c9 FOREIGN KEY (event_id) REFERENCES public.events(id);
+
+
+--
+-- Name: follow_up_tasks fk_rails_6beb9eee42; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_up_tasks
+    ADD CONSTRAINT fk_rails_6beb9eee42 FOREIGN KEY (assigned_to_id) REFERENCES public.team_members(id);
 
 
 --
@@ -1736,6 +1935,14 @@ ALTER TABLE ONLY public.team_members
 
 ALTER TABLE ONLY public.event_shifts
     ADD CONSTRAINT fk_rails_aef9f0a57a FOREIGN KEY (event_id) REFERENCES public.events(id);
+
+
+--
+-- Name: automation_steps fk_rails_b27f1330d6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.automation_steps
+    ADD CONSTRAINT fk_rails_b27f1330d6 FOREIGN KEY (automation_id) REFERENCES public.automations(id);
 
 
 --
@@ -1825,6 +2032,7 @@ ALTER TABLE ONLY public.membership_payments
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260920075555'),
 ('20260920074809'),
 ('20260920074306'),
 ('20260920072422'),
