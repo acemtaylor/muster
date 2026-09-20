@@ -566,6 +566,38 @@ ALTER SEQUENCE public.follow_up_tasks_id_seq OWNED BY public.follow_up_tasks.id;
 
 
 --
+-- Name: form_submissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.form_submissions (
+    id bigint NOT NULL,
+    page_id bigint NOT NULL,
+    person_id bigint,
+    answers jsonb NOT NULL,
+    submitted_at timestamp(6) without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: form_submissions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.form_submissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_submissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.form_submissions_id_seq OWNED BY public.form_submissions.id;
+
+
+--
 -- Name: list_folders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -743,6 +775,41 @@ CREATE SEQUENCE public.organizations_id_seq
 --
 
 ALTER SEQUENCE public.organizations_id_seq OWNED BY public.organizations.id;
+
+
+--
+-- Name: pages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pages (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    slug text NOT NULL,
+    title text,
+    content_json jsonb DEFAULT '{}'::jsonb NOT NULL,
+    published boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: pages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.pages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.pages_id_seq OWNED BY public.pages.id;
 
 
 --
@@ -1060,6 +1127,13 @@ ALTER TABLE ONLY public.follow_up_tasks ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: form_submissions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submissions ALTER COLUMN id SET DEFAULT nextval('public.form_submissions_id_seq'::regclass);
+
+
+--
 -- Name: list_folders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1092,6 +1166,13 @@ ALTER TABLE ONLY public.memberships ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 ALTER TABLE ONLY public.organizations ALTER COLUMN id SET DEFAULT nextval('public.organizations_id_seq'::regclass);
+
+
+--
+-- Name: pages id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pages ALTER COLUMN id SET DEFAULT nextval('public.pages_id_seq'::regclass);
 
 
 --
@@ -1250,6 +1331,14 @@ ALTER TABLE ONLY public.follow_up_tasks
 
 
 --
+-- Name: form_submissions form_submissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submissions
+    ADD CONSTRAINT form_submissions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: list_folders list_folders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1287,6 +1376,14 @@ ALTER TABLE ONLY public.memberships
 
 ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pages pages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pages
+    ADD CONSTRAINT pages_pkey PRIMARY KEY (id);
 
 
 --
@@ -1576,6 +1673,20 @@ CREATE INDEX index_follow_up_tasks_on_person_id ON public.follow_up_tasks USING 
 
 
 --
+-- Name: index_form_submissions_on_page_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_form_submissions_on_page_id ON public.form_submissions USING btree (page_id);
+
+
+--
+-- Name: index_form_submissions_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_form_submissions_on_person_id ON public.form_submissions USING btree (person_id);
+
+
+--
 -- Name: index_list_folders_on_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1636,6 +1747,20 @@ CREATE INDEX index_organizations_on_path ON public.organizations USING gist (pat
 --
 
 CREATE UNIQUE INDEX index_organizations_on_slug ON public.organizations USING btree (slug);
+
+
+--
+-- Name: index_pages_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_pages_on_organization_id ON public.pages USING btree (organization_id);
+
+
+--
+-- Name: index_pages_on_organization_id_and_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_pages_on_organization_id_and_slug ON public.pages USING btree (organization_id, slug);
 
 
 --
@@ -1759,6 +1884,14 @@ ALTER TABLE ONLY public.memberships
 
 ALTER TABLE ONLY public.custom_property_definitions
     ADD CONSTRAINT fk_rails_0cecd45e5a FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: form_submissions fk_rails_0ddf4078a9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submissions
+    ADD CONSTRAINT fk_rails_0ddf4078a9 FOREIGN KEY (page_id) REFERENCES public.pages(id);
 
 
 --
@@ -1906,6 +2039,14 @@ ALTER TABLE ONLY public.memberships
 
 
 --
+-- Name: pages fk_rails_8ecbce3eb4; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pages
+    ADD CONSTRAINT fk_rails_8ecbce3eb4 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
 -- Name: canvasses fk_rails_970cf4dbea; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1978,6 +2119,14 @@ ALTER TABLE ONLY public.custom_property_values
 
 
 --
+-- Name: form_submissions fk_rails_dc8d9fcfbf; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submissions
+    ADD CONSTRAINT fk_rails_dc8d9fcfbf FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: canvass_attempts fk_rails_e76622bb9a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2032,6 +2181,7 @@ ALTER TABLE ONLY public.membership_payments
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260920075927'),
 ('20260920075555'),
 ('20260920074809'),
 ('20260920074306'),
