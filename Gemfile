@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "csv"
-gem "json", ">= 2.16.0", "< 3.0"
+gem "json", ">= 2.16.0", "< 4.0"
 gem "sprockets-rails"
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
